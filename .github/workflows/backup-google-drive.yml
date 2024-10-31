@@ -1,7 +1,6 @@
 name: Google Drive Backup
 
 on:
-  schedule:
   workflow_dispatch:  # Permet également l'exécution manuelle
 
 jobs:

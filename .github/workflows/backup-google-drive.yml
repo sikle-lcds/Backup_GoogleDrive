@@ -2,7 +2,6 @@ name: Google Drive Backup
 
 on:
   schedule:
-    - cron: '35 12 * * *'  # Exécute tous les jours à 12h35 UTC
   workflow_dispatch:  # Permet également l'exécution manuelle
 
 jobs:

@@ -1,0 +1,55 @@
+name: Google Drive Backup
+
+on:
+  schedule:
+    # Exécution tous les mardis et samedis à 22:00 (UTC)
+    - cron: '0 22 * * 2'
+    - cron: '0 22 * * 6'
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup rclone
+        uses: rclone/rclone-action@v2
+        with:
+          # Charge la configuration de rclone à partir du secret
+          rclone_conf: ${{ secrets.RCLONE_CONFIG }}
+
+      - name: Create dated folder on backup Drive
+        id: create-folder
+        shell: bash
+        run: |
+          DATE=$(date +'%Y-%m-%d')
+          rclone mkdir "shared_backups:${DATE}"
+          echo "::set-output name=date::${DATE}"
+
+      - name: Sync each shared drive to backup Drive
+        shell: bash
+        run: |
+          DATE=${{ steps.create-folder.outputs.date }}
+          # Liste des noms et des ID des drives partagés
+          declare -A shared_drives=(
+            ["shared1"]="0ALEoy4NEaDfUUk9PVA"
+            ["shared2"]="0AHAU2A0VVYO3Uk9PVA"
+            ["shared3"]="0AHnc0y2XIS1SUk9PVA"
+            ["shared4"]="0AOM3TMqrQ13PUk9PVA"
+            ["shared5"]="0ALdrLO02mb30Uk9PVA"
+            ["shared6"]="0ADKjJ0I6r2GwUk9PVA"
+            ["shared7"]="0AMkHSI4vTZg4Uk9PVA"
+            ["shared8"]="0AMJWjNzUKM5sUk9PVA"
+            ["shared9"]="0AGG3KoAWc8uyUk9PVA"
+            ["shared10"]="0AFbVrLarNf0FUk9PVA"
+            ["shared11"]="0AM_vyKLGPU3ZUk9PVA"
+            ["shared12"]="0AJgcL12NmY_bUk9PVA"
+            ["shared13"]="0AMfWIu9-DvSrUk9PVA"
+          )
+          for drive_name in "${!shared_drives[@]}"; do
+            drive_id="${shared_drives[$drive_name]}"
+            echo "Syncing $drive_name (ID: $drive_id)"
+            rclone sync "remote:${drive_id}" "backup_drive:${DATE}/${drive_name}" --drive-shared-with-me --create-empty-src-dirs
+          done

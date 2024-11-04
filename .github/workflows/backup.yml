@@ -38,7 +38,19 @@ jobs:
 
         # Définir les drives partagés
         declare -A SHARED_DRIVES=(
-          ["shared1"]="test_targ"
+          ["shared1"]="shared1"
+          ["shared2"]="shared2"
+          ["shared3"]="shared3"
+          ["shared4"]="shared4"
+          ["shared5"]="shared5"
+          ["shared6"]="shared6"
+          ["shared7"]="shared7"
+          ["shared8"]="shared8"
+          ["shared9"]="shared9"
+          ["shared10"]="shared10"
+          ["shared11"]="shared11"
+          ["shared12"]="shared12"
+          ["shared13"]="shared13"
         )
 
         # Boucler sur chaque drive et exécuter la sauvegarde

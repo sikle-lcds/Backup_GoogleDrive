@@ -1,0 +1,52 @@
+name: Backup Drives to Destination
+
+on:
+  schedule:
+#    - cron: '0 0 * * *'  # Configure pour exécuter chaque jour à minuit UTC
+  workflow_dispatch:  # Permet l'exécution manuelle
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up rclone
+      run: |
+        curl -O https://downloads.rclone.org/rclone-current-linux-amd64.zip
+        unzip -j -o rclone-current-linux-amd64.zip -d ~/.local/bin/
+        chmod +x ~/.local/bin/rclone
+        rclone version
+
+    - name: Configure rclone
+      env:
+        RCLONE_CONFIG: ${{ secrets.RCLONE_CONFIG }}  # Charger la configuration depuis les secrets
+      run: |
+        mkdir -p ~/.config/rclone
+        echo "$RCLONE_CONFIG" > ~/.config/rclone/rclone.conf
+
+    - name: Backup Drives
+      env:
+        BACKUP_ROOT: "shared_backups:"
+      run: |
+        # Créer un dossier pour la date actuelle
+        DATE=$(date +"%Y-%m-%d")
+        BACKUP_FOLDER="$BACKUP_ROOT/$DATE"
+        ~/.local/bin/rclone mkdir $BACKUP_FOLDER
+
+        # Définir les drives partagés
+        declare -A SHARED_DRIVES=(
+          ["shared1"]="test_targ"
+        )
+
+        # Boucler sur chaque drive et exécuter la sauvegarde
+        for DRIVE_NAME in "${!SHARED_DRIVES[@]}"; do
+          SOURCE="${SHARED_DRIVES[$DRIVE_NAME]}:"
+          DESTINATION="$BACKUP_FOLDER/$DRIVE_NAME"
+          echo "Synchronisation de $SOURCE vers $DESTINATION..."
+          ~/.local/bin/rclone sync $SOURCE $DESTINATION --create-empty-src-dirs -v --drive-server-side-across-configs
+        done
+
+        echo "Sauvegarde terminée pour la date : $DATE"

@@ -1,7 +1,7 @@
 name: Google Drive Backup
 
 on:
-  workflow_dispatch:  # Permet également l'exécution manuelle
+  workflow_dispatch:  # Permet l'exécution manuelle
 
 jobs:
   backup:
@@ -11,27 +11,30 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Setup rclone
-        uses: rclone/rclone-action@v2
-        with:
-          # Charge la configuration de rclone à partir du secret
-          rclone_conf: ${{ secrets.RCLONE_CONFIG }}
+      - name: Install rclone
+        run: |
+          curl https://rclone.org/install.sh | sudo bash
 
       - name: Create dated folder on backup Drive
         id: create-folder
         shell: bash
+        env:
+          RCLONE_CONFIG: ${{ secrets.RCLONE_CONFIG }}
         run: |
           DATE=$(date +'%Y-%m-%d')
           rclone mkdir "shared_backups:${DATE}"
-          echo "::set-output name=date::${DATE}"
+          echo "date=${DATE}" >> $GITHUB_ENV
 
       - name: Sync each shared drive to backup Drive
         shell: bash
+        env:
+          RCLONE_CONFIG: ${{ secrets.RCLONE_CONFIG }}
         run: |
-          DATE=${{ steps.create-folder.outputs.date }}
+          DATE="${{ env.date }}"
           # Liste des noms et des ID des drives partagés
           declare -A shared_drives=(
             ["shared1"]="0AB02_pZXo1YjUk9PVA"
+            # Ajoutez d'autres drives ici en suivant le format ["Nom"]="ID"
           )
           for drive_name in "${!shared_drives[@]}"; do
             drive_id="${shared_drives[$drive_name]}"

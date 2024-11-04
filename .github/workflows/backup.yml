@@ -1,8 +1,9 @@
-name: Backup Drives to Destination
+name: Backup All Shared Drives to Backup Folder
 
 on:
-#  schedule:
-#    - cron: '0 0 * * *'  # Configure pour exécuter chaque jour à minuit UTC
+  schedule:
+    - cron: '0 22 * * 2'  # Chaque mardi à 22h UTC
+    - cron: '0 22 * * 6'  # Chaque samedi à 22h UTC
   workflow_dispatch:  # Permet l'exécution manuelle
 
 jobs:
@@ -58,7 +59,7 @@ jobs:
           SOURCE="${SHARED_DRIVES[$DRIVE_NAME]}:"
           DESTINATION="$BACKUP_FOLDER/$DRIVE_NAME"
           echo "Synchronisation de $SOURCE vers $DESTINATION..."
-          ~/.local/bin/rclone sync $SOURCE $DESTINATION --create-empty-src-dirs -v --drive-server-side-across-configs
+          ~/.local/bin/rclone sync $SOURCE $DESTINATION --create-empty-src-dirs --drive-server-side-across-configs --quiet --stats 900s --log-level ERROR
         done
 
         echo "Sauvegarde terminée pour la date : $DATE"

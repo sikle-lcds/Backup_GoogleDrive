@@ -1,7 +1,7 @@
 name: Backup Drives to Destination
 
 on:
-  schedule:
+#  schedule:
 #    - cron: '0 0 * * *'  # Configure pour exécuter chaque jour à minuit UTC
   workflow_dispatch:  # Permet l'exécution manuelle
 

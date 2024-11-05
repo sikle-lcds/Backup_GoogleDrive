@@ -37,6 +37,6 @@ jobs:
         ~/.local/bin/rclone mkdir $BACKUP_FOLDER
         SOURCE="shared4:"
         echo "Synchronisation de $SOURCE vers $BACKUP_FOLDER..."
-        ~/.local/bin/rclone sync $SOURCE $BACKUP_FOLDER --create-empty-src-dirs --drive-server-side-across-configs --quiet --stats 900s --log-level ERROR
+        ~/.local/bin/rclone sync $SOURCE $BACKUP_FOLDER --create-empty-src-dirs --drive-server-side-across-configs --stats 900s --log-level ERROR
 
         echo "Sauvegarde terminée pour shared4 pour la date : $DATE"

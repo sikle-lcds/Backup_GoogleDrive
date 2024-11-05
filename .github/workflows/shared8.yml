@@ -1,4 +1,4 @@
-name: Backup shared1 Drive
+name: Backup shared8 Drive
 
 on:
   schedule:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:  # Permet l'exécution manuelle
 
 jobs:
-  backup-shared1:
+  backup-shared8:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,15 +28,15 @@ jobs:
         mkdir -p ~/.config/rclone
         echo "$RCLONE_CONFIG" > ~/.config/rclone/rclone.conf
 
-    - name: Backup shared1
+    - name: Backup shared8
       env:
         BACKUP_ROOT: "shared_backups:"
       run: |
         DATE=$(date +"%Y-%m-%d")
-        BACKUP_FOLDER="$BACKUP_ROOT/$DATE/shared1"
+        BACKUP_FOLDER="$BACKUP_ROOT/$DATE/shared8"
         ~/.local/bin/rclone mkdir $BACKUP_FOLDER
-        SOURCE="shared1:"
+        SOURCE="shared8:"
         echo "Synchronisation de $SOURCE vers $BACKUP_FOLDER..."
-        ~/.local/bin/rclone sync $SOURCE $BACKUP_FOLDER --create-empty-src-dirs --drive-server-side-across-configs --quiet --stats 900s --log-level ERROR
+        ~/.local/bin/rclone sync $SOURCE $BACKUP_FOLDER --create-empty-src-dirs --drive-server-side-across-configs --stats 900s --log-level ERROR
 
-        echo "Sauvegarde terminée pour shared1 pour la date : $DATE"
+        echo "Sauvegarde terminée pour shared8 pour la date : $DATE"

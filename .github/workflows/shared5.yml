@@ -1,0 +1,42 @@
+name: Backup shared5 Drive
+
+on:
+  schedule:
+    - cron: '0 22 * * 2'  # Chaque mardi à 22h UTC
+    - cron: '0 22 * * 6'  # Chaque samedi à 22h UTC
+  workflow_dispatch:  # Permet l'exécution manuelle
+
+jobs:
+  backup-shared5:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up rclone
+      run: |
+        curl -O https://downloads.rclone.org/rclone-current-linux-amd64.zip
+        unzip -j -o rclone-current-linux-amd64.zip -d ~/.local/bin/
+        chmod +x ~/.local/bin/rclone
+        rclone version
+
+    - name: Configure rclone
+      env:
+        RCLONE_CONFIG: ${{ secrets.RCLONE_CONFIG }}  # Charger la configuration depuis les secrets
+      run: |
+        mkdir -p ~/.config/rclone
+        echo "$RCLONE_CONFIG" > ~/.config/rclone/rclone.conf
+
+    - name: Backup shared5
+      env:
+        BACKUP_ROOT: "shared_backups:"
+      run: |
+        DATE=$(date +"%Y-%m-%d")
+        BACKUP_FOLDER="$BACKUP_ROOT/$DATE/shared5"
+        ~/.local/bin/rclone mkdir $BACKUP_FOLDER
+        SOURCE="shared5:"
+        echo "Synchronisation de $SOURCE vers $BACKUP_FOLDER..."
+        ~/.local/bin/rclone sync $SOURCE $BACKUP_FOLDER --create-empty-src-dirs --drive-server-side-across-configs --stats 900s --log-level ERROR
+
+        echo "Sauvegarde terminée pour shared5 pour la date : $DATE"

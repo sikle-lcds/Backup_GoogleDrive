@@ -16,9 +16,9 @@ jobs:
 
     - name: Set up rclone
       run: |
-        curl -O https://downloads.rclone.org/rclone-current-linux-amd64.zip
-        unzip -j -o rclone-current-linux-amd64.zip -d ~/.local/bin/
-        chmod +x ~/.local/bin/rclone
+        sudo curl -O https://downloads.rclone.org/rclone-current-linux-amd64.zip
+        sudo unzip -j -o rclone-current-linux-amd64.zip -d /usr/local/bin/
+        sudo chmod +x /usr/local/bin/rclone
         rclone version
 
     - name: Configure rclone
@@ -34,9 +34,9 @@ jobs:
       run: |
         DATE=$(date +"%Y-%m-%d")
         BACKUP_FOLDER="$BACKUP_ROOT/$DATE/shared12"
-        ~/.local/bin/rclone mkdir $BACKUP_FOLDER
+        /usr/local/bin/rclone mkdir $BACKUP_FOLDER
         SOURCE="shared12:"
         echo "Synchronisation de $SOURCE vers $BACKUP_FOLDER..."
-        ~/.local/bin/rclone sync $SOURCE $BACKUP_FOLDER --create-empty-src-dirs --drive-server-side-across-configs --stats 900s --log-level ERROR
+        /usr/local/bin/rclone sync $SOURCE $BACKUP_FOLDER --create-empty-src-dirs --drive-server-side-across-configs --stats 900s --log-level ERROR
 
         echo "Sauvegarde terminée pour shared12 pour la date : $DATE"

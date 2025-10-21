@@ -16,7 +16,7 @@ jobs:
         echo "$RCLONE_CONFIG" > rclone-export/rclone.conf
 
     - name: Upload rclone.conf as artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: rclone-config
         path: rclone-export/rclone.conf
